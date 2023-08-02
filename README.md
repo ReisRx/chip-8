@@ -2,4 +2,4 @@
 
 how to run:
 
-    $ gcc main.c -o build/test.exe -Ilibs/include -Llibs/lib -lSDL2 -lSDL2_image
+    $ gcc main.c chip8.c -o build/test.exe -Ilibs/include -Llibs/lib -lSDL2 -lSDL2_image
