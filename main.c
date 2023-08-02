@@ -6,26 +6,26 @@
 
 #include "chip8.h"
 
-SDL_Window* setupGraphics() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        printf("Error initializing SDL: %s\n", SDL_GetError());
-        exit(EXIT_FAILURE);
-    }
+extern unsigned char gfx[WIDTH][HEIGHT];
+extern unsigned char drawFlag;
 
-    SDL_Window* win = SDL_CreateWindow("CHIP-8",
-                                       SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED,
-                                       640, 320, 0);
-    
-    return win;
+void drawFromGFX(SDL_Renderer* renderer) {
+    for(unsigned char row = 0; row < WIDTH; row++) {
+        for(unsigned char column = 0; column < HEIGHT; column++) {
+            if(gfx[row][column] == 0) { // Black
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            } else { // White
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            }
+
+            SDL_Rect rect = {column * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE};
+            SDL_RenderFillRect(renderer, &rect);
+        }
+    }
 }
  
 int main(int argc, char *argv[])
 {
-    // setupGraphics();
-    // setupInput();
-
-    // returns zero on success else non-zero
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
     }
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     SDL_Window* window = SDL_CreateWindow("CHIP-8",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       640, 320, 0);
+                                       WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE, 0);
     
     if(window == NULL) {
         printf("Error creating window: %s\n", SDL_GetError());
@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
     chip8_Initialize();
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
     SDL_Event event;
     unsigned char quit = 0;
 
     while (!quit) {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
         // Handling Input
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -67,8 +67,13 @@ int main(int argc, char *argv[])
 
         chip8_EmulateCycle();
 
-        SDL_RenderPresent(renderer);
-        SDL_Delay(500);
+        if(drawFlag) {
+            drawFromGFX(renderer);
+            SDL_RenderPresent(renderer);
+            drawFlag = 0;
+        }
+        // SDL_Delay(500);
+        SDL_Delay(250);
     }
 
     SDL_DestroyRenderer(renderer);
