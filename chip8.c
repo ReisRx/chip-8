@@ -49,31 +49,31 @@ void chip8_Initialize() {
     // TODO: ALL 0x8XYN NEED TESTING
 
     memory[512] = 0x60;
-    memory[513] = 0x18;
+    memory[513] = 0x7F;
     
     memory[514] = 0x61;
-    memory[515] = 0x18;
+    memory[515] = 0x01;
 
-    memory[516] = 0x62;
-    memory[517] = 0x18;
+    memory[516] = 0x80;
+    memory[517] = 0x1E;
 
-    memory[518] = 0x63;
-    memory[519] = 0x24;
+    memory[518] = 0x00;
+    memory[519] = 0x00;
 
-    memory[520] = 0xA5;
+    memory[520] = 0x00;
     memory[521] = 0x00;
 
-    memory[522] = 0xF3;
-    memory[523] = 0x55;
+    memory[522] = 0x00;
+    memory[523] = 0x00;
 
-    memory[524] = 0x64;
+    memory[524] = 0x00;
     memory[525] = 0x00;
 
-    memory[526] = 0xD4;
-    memory[527] = 0x44;
+    memory[526] = 0x00;
+    memory[527] = 0x00;
     
     memory[528] = 0x00;
-    memory[529] = 0xE0;
+    memory[529] = 0x00;
 
     // TODO: Load fontset
 
@@ -117,26 +117,69 @@ void chip8_EmulateCycle() {
         case 0x8000: // 0x8XYN
             unsigned char registerX = (currentOpcode & 0x0F00) >> 8;
             unsigned char registerY = (currentOpcode & 0x00F0) >> 4;
+            unsigned char vY = registers[registerY];
 
             switch (currentOpcode & 0x000F) {
+                
                 case 0x0: // VX = VY
-                    registers[registerX] = registers[registerY];
+                    registers[registerX] = vY;
                     programCounter += 2;
                     break;
                 
                 case 0x1: // VX |= VY
-                    registers[registerX] |= registers[registerY];
+                    registers[registerX] |= vY;
                     programCounter += 2;
                     break;
-                // TODO: Continue doing 0x8000 cases
+                
+                case 0x2: // VX &= VY
+                    registers[registerX] &= vY;
+                    programCounter += 2;
+                    break;
+
+                case 0x3: // VX ^= VY
+                    registers[registerX] ^= vY;
+                    programCounter += 2;
+                    break;
+
+                case 0x4: // VX += VY
+                    unsigned char oldRegisterX = registers[registerX];
+                    registers[registerX] += vY;
+                    registers[0xF] = registers[registerX] < oldRegisterX ? 1 : 0;
+                    programCounter += 2;
+                    break;
+                
+                case 0x5: // VX -= VY
+                    registers[0xF] = vY > registers[registerX] ? 0 : 1;
+                    registers[registerX] -= vY;
+                    programCounter += 2;
+                    break;
+
+                case 0x6: // VX >>= 1
+                    registers[0xF] = registers[registerX] & 0x01; // less significant bit
+                    registers[registerX] >>= 1;
+                    programCounter += 2;
+                    break;
+
+                case 0x7: // VX = VY - VX
+                    registers[0xF] = registers[registerX] > vY ? 0 : 1;
+                    registers[registerX] = vY - registers[registerX];
+                    programCounter += 2;
+                    break;
+
+                case 0xE: // VX <<= 1
+                registers[0xF] = (registers[registerX] & 0x80) >> 7; // most significant bit
+                    registers[registerX] <<= 1;
+                    programCounter += 2;
+                    break;
             }
-            printf("Vx = 0x%x\n", registers[(currentOpcode & 0x0F00) >> 8]);
+            printf("Vx = 0x%X\n", registers[(currentOpcode & 0x0F00) >> 8]);
+            printf("VF = 0x%X\n", registers[0xF]);
             break;
 
         case 0xA000: // 0xANNN
             indexRegister = currentOpcode & 0x0FFF;
             programCounter += 2;
-            printf("I = 0x%x\n", indexRegister);
+            printf("I = 0x%X\n", indexRegister);
             break;
 
         case 0xD000: // 0xDXYN
