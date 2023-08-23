@@ -2,3 +2,6 @@
 
 # Executable files
 *.exe
+
+# CHIP-8 ROMS
+*.ch8

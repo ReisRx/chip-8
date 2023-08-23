@@ -1,11 +1,14 @@
 #define SDL_MAIN_HANDLED
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
 #include "chip8.h"
 
+extern unsigned char keypad[KEYPAD_SIZE];
 extern unsigned char gfx[WIDTH][HEIGHT];
 extern unsigned char drawFlag;
 
@@ -18,7 +21,7 @@ void drawFromGFX(SDL_Renderer* renderer) {
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             }
 
-            SDL_Rect rect = {column * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE};
+            SDL_Rect rect = {row * CELL_SIZE, column * CELL_SIZE, CELL_SIZE, CELL_SIZE};
             SDL_RenderFillRect(renderer, &rect);
         }
     }
@@ -26,6 +29,11 @@ void drawFromGFX(SDL_Renderer* renderer) {
  
 int main(int argc, char *argv[])
 {
+    if (argc != 2) {
+        fprintf(stderr, "No game loaded: ./executable <path-to-game>\n");
+        exit(EXIT_FAILURE);
+    }
+
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
     }
@@ -42,7 +50,9 @@ int main(int argc, char *argv[])
     }
 
 
+    srand(time(0));
     chip8_Initialize();
+    chip8_LoadGame(argv[1]);
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -61,6 +71,22 @@ int main(int argc, char *argv[])
                     quit = 1;
                 }
             }  
+
+            if(event.type == SDL_KEYDOWN) {
+                for(unsigned char i = 0; i < KEYPAD_SIZE; i++) {
+                    if(event.key.keysym.sym == KEYMAP[i]) {
+                        keypad[i] = 1;
+                    }
+                }
+            }
+
+            if(event.type == SDL_KEYUP) {
+                for(unsigned char i = 0; i < KEYPAD_SIZE; i++) {
+                    if(event.key.keysym.sym == KEYMAP[i]) {
+                        keypad[i] = 0;
+                    }
+                }
+            }
         }
 
         // Continue emulation
@@ -73,7 +99,7 @@ int main(int argc, char *argv[])
             drawFlag = 0;
         }
         // SDL_Delay(500);
-        SDL_Delay(250);
+        // SDL_Delay(25);
     }
 
     SDL_DestroyRenderer(renderer);
