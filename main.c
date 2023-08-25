@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
     srand(time(0));
     chip8_Initialize();
-    // chip8_LoadGame(argv[1]);
+    chip8_LoadGame(argv[1]);
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -86,10 +86,10 @@ int main(int argc, char *argv[])
     unsigned char quit = 0;
 
     double start = 0;
-    double end = (1 / 60.0) * CLOCKS;
+    double end = (1 / 60.0) * CLOCKS_PER_SEC;
     double deltaTime = 0;
     double timeAccumulator = 0;
-    double threshold = (1 / 60.0) * CLOCKS; // 1000 seems too slow
+    double threshold = (1 / 60.0) * CLOCKS_PER_SEC;
 
     while (!quit) {
         deltaTime = end - start;

@@ -76,9 +76,6 @@ void chip8_Initialize() {
     for(int i = 0; i < 80; i++) {
         memory[i] = fontset[i];
     }
-
-    memory[0x200 + 0] = 0x00;
-    memory[0x200 + 1] = 0x00;
 }
 
 void chip8_LoadGame(char *game) {

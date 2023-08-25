@@ -1,60 +1,32 @@
 # CHIP-8
 
-### how to run:
+CHIP-8 is usually called an emulator but it's basically an interpreted programming language made in the 1970s. ([Wiki](https://en.wikipedia.org/wiki/CHIP-8#))
 
-    $ gcc main.c chip8.c -o build/test.exe -Ilibs/include -Llibs/lib -lSDL2 -lSDL2_image
+I decided to do this because it's said to be a great starting point on Emulation.  
 
-### for debug:
+## How to run:
 
-    $ gcc -g main.c chip8.c -o build/debug.exe -Ilibs/include -Llibs/lib -lSDL2 -lSDL2_image
+##### Normal:
 
-### To Do:
+    $ ./build.sh
 
-- [ ] Makefile
-- [ ] Linux .so files
-- [x] Opcodes:
-    - [x] 00E0
-    - [x] 00EE
-    - [x] 1NNN
-    - [x] 2NNN
-    - [x] 3XNN
-    - [x] 4XNN
-    - [x] 5XY0
-    - [x] 6XNN
-    - [x] 7XNN
-    - [x] 8XY0
-    - [x] 8XY1
-    - [x] 8XY2
-    - [x] 8XY3
-    - [x] 8XY4
-    - [x] 8XY5
-    - [x] 8XY6
-    - [x] 8XY7
-    - [x] 8XYE
-    - [x] 9XY0
-    - [x] ANNN
-    - [x] BNNN
-    - [x] CXNN
-    - [x] DXYN
-    - [x] EX9E
-    - [x] EXA1
-    - [x] FX07
-    - [x] FX0A
-    - [x] FX15
-    - [x] FX18
-    - [x] FX1E
-    - [x] FX29
-    - [x] FX33
-    - [x] FX55
-    - [x] FX65
-- [x] fix timings (emulate hardware)
-- [x] remove prints or add DEBUG flag in makefile to print
+##### Debug:
+
+    $ ./build.sh debug
+
+
+## About the code
+
+I made this in C using GCC (version 13.1.0) and SDL2 (version 2.28.2). Its been tested to run on Windows and Linux (Arch Linux).
 
 ## References:
 
-- https://github.com/Timendus/chip8-test-suite for testing
-- https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#timing guide
-- https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/ guide
-- https://youtu.be/YtSgV3gY3fs?si=Ltyd1Jb9P9975EZj&t=360 special thanks for time step part
-- https://en.wikipedia.org/wiki/CHIP-8 chip-8 wiki
-- https://wiki.libsdl.org/SDL2/CategoryAPI sdl2 wiki
+##### Guides and Wikis:
+- https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#timing
+- https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
+- https://en.wikipedia.org/wiki/CHIP-8
+- https://wiki.libsdl.org/SDL2/CategoryAPI
+
+##### Special Thanks:
+- https://github.com/Timendus/chip8-test-suite
+- https://youtu.be/YtSgV3gY3fs?si=Ltyd1Jb9P9975EZj&t=360 (Emulating cycles)
