@@ -10,12 +10,12 @@
 #define STACK_SIZE 16
 #define KEYPAD_SIZE 16
 #define REGISTERS_SIZE 16
+#define CLOCKS 200
 
 
 void chip8_Initialize();
 void chip8_LoadGame(char *game);
 void chip8_EmulateCycle();
-void chip8_Tick();
 
 
 const static unsigned char KEYMAP[KEYPAD_SIZE] = {

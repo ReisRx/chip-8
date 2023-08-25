@@ -49,6 +49,12 @@ unsigned char keypad[KEYPAD_SIZE];
 
 unsigned char drawFlag;
 
+SDL_AudioDeviceID audioDevice;
+
+void unknownOpcode(unsigned short opcode) {
+    fprintf(stderr, "Unkown opcode: 0x%04X\nExiting CHIP-8\n", opcode);
+    exit(EXIT_FAILURE);
+}
 
 void chip8_Initialize() {
     programCounter = 0x200;
@@ -70,6 +76,9 @@ void chip8_Initialize() {
     for(int i = 0; i < 80; i++) {
         memory[i] = fontset[i];
     }
+
+    memory[0x200 + 0] = 0x00;
+    memory[0x200 + 1] = 0x00;
 }
 
 void chip8_LoadGame(char *game) {
@@ -92,8 +101,6 @@ void chip8_LoadGame(char *game) {
 void chip8_EmulateCycle() {
     // Fetch opcode
     currentOpcode = memory[programCounter] << 8 | memory[programCounter + 1];
-    printf("curr = 0x%X\n", currentOpcode);
-
 
     // Decode and execute opcode
     switch(currentOpcode & 0xF000) {
@@ -110,7 +117,7 @@ void chip8_EmulateCycle() {
                     break;
 
                 default:
-                    // TODO: Implement unknown opcode
+                    unknownOpcode(currentOpcode);
                     break;
             }
             break;
@@ -222,7 +229,7 @@ void chip8_EmulateCycle() {
                     break;
                 
                 default:
-                    // TODO: Unknown opcode
+                    unknownOpcode(currentOpcode);
                     break;
             }
             break;
@@ -295,7 +302,7 @@ void chip8_EmulateCycle() {
                     break;
 
                 default:
-                    // TODO: Implement unknown opcode
+                    unknownOpcode(currentOpcode);
                     break;
             }
             break;
@@ -317,11 +324,10 @@ void chip8_EmulateCycle() {
                         }
                     }
 
-                    if(!isPressed) {
-                        break;
+                    if(isPressed) {
+                        programCounter += 2;
                     }
 
-                    programCounter += 2;
                     break;
 
                 case 0x15: // 0xFX15 delayTimer = VX
@@ -368,13 +374,13 @@ void chip8_EmulateCycle() {
                     break;
 
                 default:
-                    // TODO: Implement unknown opcode
+                    unknownOpcode(currentOpcode);
                     break;
             }
             break;
 
         default:
-            // TODO: Implement unknown opcode
+            unknownOpcode(currentOpcode);
             break;
     }
 
@@ -384,9 +390,9 @@ void chip8_EmulateCycle() {
     }
 
     if(soundTimer > 0) {
-        printf("beep\n");
+        SDL_PauseAudioDevice(audioDevice, 0);
         soundTimer--;
+    } else {
+        SDL_PauseAudioDevice(audioDevice, 1);
     }
 }
-
-void chip8_Tick();

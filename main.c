@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
@@ -11,6 +12,20 @@
 extern unsigned char keypad[KEYPAD_SIZE];
 extern unsigned char gfx[WIDTH][HEIGHT];
 extern unsigned char drawFlag;
+extern SDL_AudioDeviceID audioDevice;
+
+void audioCallback(void *userdata, Uint8 *stream, int len) {
+    double frequency = 440.0;
+    double amplitude = 0.5;
+
+    double angularFrequency = 2.0 * M_PI * frequency / 44100.0;
+
+    for (int i = 0; i < len; i += 2) {
+        Sint16 sample = (Sint16)(amplitude * 32767.0 * sin(angularFrequency * i));
+        stream[i] = sample & 0xFF; 
+        stream[i + 1] = (sample >> 8) & 0xFF;
+    }
+}
 
 void drawFromGFX(SDL_Renderer* renderer) {
     for(unsigned char row = 0; row < WIDTH; row++) {
@@ -26,7 +41,7 @@ void drawFromGFX(SDL_Renderer* renderer) {
         }
     }
 }
- 
+
 int main(int argc, char *argv[])
 {
     if (argc != 2) {
@@ -49,10 +64,19 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    SDL_AudioSpec audioSpec;
+    audioSpec.freq = 44100;
+    audioSpec.format = AUDIO_S16SYS;
+    audioSpec.channels = 1;
+    audioSpec.samples = 1024;
+    audioSpec.callback = audioCallback;
+    audioSpec.userdata = NULL;
+
+    audioDevice = SDL_OpenAudioDevice(NULL, 0, &audioSpec, NULL, 0);
 
     srand(time(0));
     chip8_Initialize();
-    chip8_LoadGame(argv[1]);
+    // chip8_LoadGame(argv[1]);
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -61,7 +85,17 @@ int main(int argc, char *argv[])
     SDL_Event event;
     unsigned char quit = 0;
 
+    double start = 0;
+    double end = (1 / 60.0) * CLOCKS;
+    double deltaTime = 0;
+    double timeAccumulator = 0;
+    double threshold = (1 / 60.0) * CLOCKS; // 1000 seems too slow
+
     while (!quit) {
+        deltaTime = end - start;
+        start = clock();
+        timeAccumulator += deltaTime;
+
         // Handling Input
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -89,19 +123,23 @@ int main(int argc, char *argv[])
             }
         }
 
-        // Continue emulation
+        // Continue emulation 
+        if (timeAccumulator >= threshold){
+            chip8_EmulateCycle();
 
-        chip8_EmulateCycle();
+            if(drawFlag) {
+                drawFromGFX(renderer);
+                SDL_RenderPresent(renderer);
+                drawFlag = 0;
+            }
 
-        if(drawFlag) {
-            drawFromGFX(renderer);
-            SDL_RenderPresent(renderer);
-            drawFlag = 0;
+            timeAccumulator -= threshold;
         }
-        // SDL_Delay(500);
-        // SDL_Delay(25);
+
+        end = clock();
     }
 
+    SDL_CloseAudioDevice(audioDevice);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     return 0;

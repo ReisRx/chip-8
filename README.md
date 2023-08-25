@@ -11,7 +11,8 @@
 ### To Do:
 
 - [ ] Makefile
-- [ ] Opcodes:
+- [ ] Linux .so files
+- [x] Opcodes:
     - [x] 00E0
     - [x] 00EE
     - [x] 1NNN
@@ -46,7 +47,7 @@
     - [x] FX33
     - [x] FX55
     - [x] FX65
-- [ ] fix timings (emulate hardware)
+- [x] fix timings (emulate hardware)
 - [x] remove prints or add DEBUG flag in makefile to print
 
 - Credits:
