@@ -50,8 +50,11 @@
 - [x] fix timings (emulate hardware)
 - [x] remove prints or add DEBUG flag in makefile to print
 
-- Credits:
-    - https://github.com/Timendus/chip8-test-suite for testing
-    - https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#timing guide
-    - https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/ guide
-    - https://youtu.be/YtSgV3gY3fs?si=Ltyd1Jb9P9975EZj&t=360 special thanks for time step part
+## References:
+
+- https://github.com/Timendus/chip8-test-suite for testing
+- https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#timing guide
+- https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/ guide
+- https://youtu.be/YtSgV3gY3fs?si=Ltyd1Jb9P9975EZj&t=360 special thanks for time step part
+- https://en.wikipedia.org/wiki/CHIP-8 chip-8 wiki
+- https://wiki.libsdl.org/SDL2/CategoryAPI sdl2 wiki
