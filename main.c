@@ -7,6 +7,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
+#include <unistd.h>
+
 #include "chip8.h"
 
 extern unsigned char keypad[KEYPAD_SIZE];
@@ -63,6 +65,12 @@ int main(int argc, char *argv[])
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
+
+    SDL_Surface *iconSurface = SDL_LoadBMP("images/logo.bmp");
+    if (!iconSurface) {
+        iconSurface = SDL_LoadBMP("../images/logo.bmp");
+    }
+    SDL_SetWindowIcon(window, iconSurface);
 
     SDL_AudioSpec audioSpec;
     audioSpec.freq = 44100;
@@ -139,6 +147,7 @@ int main(int argc, char *argv[])
         end = clock();
     }
 
+    SDL_FreeSurface(iconSurface);
     SDL_CloseAudioDevice(audioDevice);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
