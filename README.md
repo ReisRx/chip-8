@@ -9,6 +9,9 @@ I decided to do this because it's said to be a great starting point on Emulation
 ### Requirements
 
 - GCC version 13.1.0 or greater
+- Sometimes in Linux you might need to run this first 
+
+      $ chmod +x build.sh 
 
 ### Compiling
 ##### Normal:
