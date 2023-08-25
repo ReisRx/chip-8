@@ -4,8 +4,13 @@ CHIP-8 is usually called an emulator but it's basically an interpreted programmi
 
 I decided to do this because it's said to be a great starting point on Emulation.  
 
-## How to run:
+## How to compile run:
 
+### Requirements
+
+- GCC version 13.1.0 or greater
+
+### Compiling
 ##### Normal:
 
     $ ./build.sh
@@ -14,6 +19,17 @@ I decided to do this because it's said to be a great starting point on Emulation
 
     $ ./build.sh debug
 
+### Running
+
+#### Windows
+
+    $ cd build
+    $ chip8.exe <ROM> 
+
+#### Linux
+
+    $ cd build
+    $ ./chip8 <ROM>
 
 ## About the code
 
